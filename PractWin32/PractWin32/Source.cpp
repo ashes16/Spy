@@ -1,66 +1,63 @@
 #include<Windows.h>
-#include<tchar.h>
-#include<stdio.h>
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR zcCmdLine, int iCmdShow)
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-	static TCHAR szAppName[] = TEXT("Hello Window");
 	HWND hwnd;
 	MSG msg;
-	WNDCLASS wndclass;
+	WNDCLASSEX	 wndclass;
+	TCHAR azAppName[] = TEXT("MY Window");
 
+	wndclass.cbSize = sizeof(wndclass);
 	wndclass.style = CS_HREDRAW | CS_VREDRAW;
-	wndclass.lpfnWndProc = WndProc;
 	wndclass.cbClsExtra = 0;
 	wndclass.cbWndExtra = 0;
-	wndclass.hInstance = hInstance;
-	wndclass.hIcon = LoadIcon(NULL, IDI_WINLOGO);
-	wndclass.hCursor = LoadCursor(NULL, IDC_HAND);
+	wndclass.lpfnWndProc = WndProc;
 	wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wndclass.hInstance = hInstance;
+	wndclass.lpszClassName = azAppName;
 	wndclass.lpszMenuName = NULL;
-	wndclass.lpszClassName = szAppName;
+	wndclass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-	if(!RegisterClass(&wndclass))
-	{
-		MessageBox(NULL, TEXT("This Program Requires Windows 10!"), szAppName, MB_ICONERROR);
-		return 0;
-	}
-
-	hwnd = CreateWindow(szAppName, TEXT("Hello my first Window Program"), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+	RegisterClassEx(&wndclass);
+	hwnd = CreateWindow(azAppName,TEXT("HEY"),WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,CW_USEDEFAULT,NULL,NULL,hInstance,NULL);
 
 	ShowWindow(hwnd, iCmdShow);
 	UpdateWindow(hwnd);
 
-	while(GetMessage(&msg, NULL, 0, 0))
+	while(GetMessage(&msg,NULL,0,0))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-		return msg.wParam;
+
+	return(int)msg.wParam;
 }
-
-LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WndProc(HWND hwnd, UINT imsg, WPARAM wparam, LPARAM lparam)
 {
-	HDC hdc;
-	PAINTSTRUCT ps;
-	RECT rect;
-
-	switch (message)
+	switch (imsg)
 	{
+	case WM_RBUTTONDOWN:
+		MessageBox(hwnd, TEXT("r button down"), TEXT("WM_RBUTTONDOWN"), MB_OK);
+		break;
 	case WM_CREATE:
-		//PlaySound(TEXT("HELLOWIN.WAV"), NULL, SND_FILENAME | SND_ASYNC);
-		return 0;
-	case WM_PAINT:
-		hdc = BeginPaint(hwnd, &ps);
-		GetClientRect(hwnd, &rect);
-
-		DrawText(hdc, TEXT("Hello Windows 10 !"),-1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-		EndPaint(hwnd, &ps);
-		return 0;
+		MessageBox(hwnd, TEXT("Window Created"), TEXT("WM_CREATE"), MB_OK);
+		break;
+	case WM_LBUTTONDOWN:
+		MessageBox(hwnd, TEXT("l  button down"), TEXT("WM_LBUTTONDOWN"), MB_OK);
+		break;
+	case WM_KEYDOWN:
+		MessageBox(hwnd, TEXT(" wm keyDown"), TEXT("WM_KEYDOWN"), MB_OK);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		return 0;
+		break;
+	default:
+		break;
 	}
-	return DefWindowProc(hwnd, message, wParam, lParam);
+
+	return (DefWindowProc(hwnd, imsg, wparam, lparam));
 }

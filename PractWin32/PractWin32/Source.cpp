@@ -1,4 +1,5 @@
 #include<Windows.h>
+#include"SystemMetrics.h"
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -14,7 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 	wndclass.cbClsExtra = 0;
 	wndclass.cbWndExtra = 0;
 	wndclass.lpfnWndProc = WndProc;
-	wndclass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wndclass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndclass.hInstance = hInstance;
@@ -38,19 +39,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 }
 LRESULT CALLBACK WndProc(HWND hwnd, UINT imsg, WPARAM wparam, LPARAM lparam)
 {
+	
+	TCHAR str[]=TEXT("!!! HELLO WORLD !!!");
+	HDC hdc;
+	RECT rect;
+	TEXTMETRIC tm;
+	PAINTSTRUCT ps;
 	switch (imsg)
 	{
-	case WM_RBUTTONDOWN:
-		MessageBox(hwnd, TEXT("r button down"), TEXT("WM_RBUTTONDOWN"), MB_OK);
-		break;
-	case WM_CREATE:
-		MessageBox(hwnd, TEXT("Window Created"), TEXT("WM_CREATE"), MB_OK);
-		break;
-	case WM_LBUTTONDOWN:
-		MessageBox(hwnd, TEXT("l  button down"), TEXT("WM_LBUTTONDOWN"), MB_OK);
-		break;
-	case WM_KEYDOWN:
-		MessageBox(hwnd, TEXT(" wm keyDown"), TEXT("WM_KEYDOWN"), MB_OK);
+	case WM_PAINT:
+		GetClientRect(hwnd, &rect);
+		hdc = BeginPaint(hwnd, &ps);
+		SetBkColor(hdc, RGB(0, 0, 0));
+		SetTextColor(hdc, RGB(0, 255, 0));
+		DrawText(hdc, str, -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+		EndPaint(hwnd, &ps);
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
@@ -59,5 +62,5 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT imsg, WPARAM wparam, LPARAM lparam)
 		break;
 	}
 
-	return (DefWindowProc(hwnd, imsg, wparam, lparam));
+	return DefWindowProc(hwnd, imsg, wparam, lparam);
 }
